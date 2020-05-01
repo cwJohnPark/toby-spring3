@@ -1,5 +1,7 @@
 package springbook.user.dao;
 
+import springbook.user.connection.ConnectionMaker;
+import springbook.user.connection.DConnectionMaker;
 import springbook.user.domain.User;
 
 import java.sql.Connection;

@@ -1,4 +1,4 @@
-package springbook.user.dao;
+package springbook.user.connection;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -7,5 +7,5 @@ import java.sql.SQLException;
  * 1-8 ConnectionMaker 인터페이스
  */
 public interface ConnectionMaker {
-    public Connection makeConnection() throws ClassNotFoundException, SQLException;
+    Connection makeConnection() throws ClassNotFoundException, SQLException;
 }
