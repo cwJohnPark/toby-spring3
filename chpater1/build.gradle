@@ -25,4 +25,6 @@ dependencies {
     compile group: 'org.springframework', name: 'spring-aop', version: '3.0.7.RELEASE'
     compile group: 'cglib', name: 'cglib', version: '2.2'
 
+    compile group: 'org.springframework', name: 'spring-jdbc', version: '3.0.7.RELEASE'
+
 }
