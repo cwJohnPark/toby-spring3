@@ -17,8 +17,10 @@ dependencies {
     compile group: 'org.springframework', name: 'spring-core', version: '3.0.7.RELEASE'
     compile group: 'org.springframework', name: 'spring-expression', version: '3.0.7.RELEASE'
     compile group: 'org.springframework', name: 'spring-aop', version: '3.0.7.RELEASE'
+
     compile group: 'cglib', name: 'cglib', version: '2.2'
 
     compile group: 'org.springframework', name: 'spring-jdbc', version: '3.0.7.RELEASE'
 
+    compile group: 'org.springframework', name: 'spring-test', version: '3.0.7.RELEASE'
 }

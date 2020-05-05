@@ -2,9 +2,12 @@ package springbook.user.dao;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import springbook.user.domain.User;
 
 import java.sql.SQLException;
@@ -13,23 +16,27 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * 2-16 User 픽스쳐를 적용한 UserDaoTest
+ * 2-19 UserDao를 직접 DI받도록 만든 테스트
+ * 기존 DL 방식보다 훨씬 깔끔해짐
  */
-public class UserDaoTest_2_16 {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations="/applicationContext-2-14.xml")
+public class UserDaoTest_2_19 {
 
+    @Autowired
+    private ApplicationContext context;
+
+    // UserDao 타입 빈을 직접 DI받는다.
+    @Autowired
     private UserDao_Exception dao;
+
     private User user1;
     private User user2;
     private User user3;
 
+
     @Before
     public void setUp() {
-        ApplicationContext context = new GenericXmlApplicationContext("applicationContext-2-14.xml");
-
-        // dao 픽스쳐
-        dao = context.getBean("userDao", UserDao_Exception.class);
-
-        // User 객체 픽스쳐
         user1 = new User("gyumee", "박성철", "springno1");
         user2 = new User("leegw700", "이길원", "springno2");
         user3 = new User("bumjin", "박범진", "springno3");

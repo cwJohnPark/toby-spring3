@@ -2,9 +2,13 @@ package springbook.user.dao;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import springbook.user.domain.User;
 
 import java.sql.SQLException;
@@ -13,18 +17,34 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * 2-16 User 픽스쳐를 적용한 UserDaoTest
+ * 2-17 스프링 테스트 컨텍스트를 적용한 UserDaoTest
  */
-public class UserDaoTest_2_16 {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations="/applicationContext-2-14.xml")
+public class UserDaoTest_2_17 {
+
+    // 테스트 오브젝트가 만들어지고 나면 스프링 테스트 컨텍스트에 의해 자동으로 값이 주입됨
+    @Autowired
+    private ApplicationContext context;
 
     private UserDao_Exception dao;
     private User user1;
     private User user2;
     private User user3;
 
+    /**
+     * 2-18 애플리케이션 컨텍스트 확인용 코드 추가
+     */
+    @Before
+    public void setUp2() {
+        System.out.println(this.context); // 컨텍스트 객체는 바뀌지 않음
+        System.out.println(this); // 매번 새로 Test 클래스 객체를 생성함
+    }
+
     @Before
     public void setUp() {
-        ApplicationContext context = new GenericXmlApplicationContext("applicationContext-2-14.xml");
+        // 주입을 받았음으로 사용하지 않음
+        //ApplicationContext context = new GenericXmlApplicationContext("applicationContext-2-14.xml");
 
         // dao 픽스쳐
         dao = context.getBean("userDao", UserDao_Exception.class);
