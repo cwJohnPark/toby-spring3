@@ -6,36 +6,35 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import springbook.user.domain.User;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * 2-19 UserDao를 직접 DI받도록 만든 테스트
- * 기존 DL 방식보다 훨씬 깔끔해짐
+ * 2-23 애플리케이션 컨텍스트 없는 DI 테스트
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/applicationContext-2-14.xml")
-public class UserDaoTest_2_19 {
+public class UserDaoTest_2_23 {
+    // @Autowired가 없다.
+    UserDao_Exception dao;
 
-    @Autowired
-    private ApplicationContext context;
-
-    // UserDao 타입 빈을 직접 DI받는다.
-    @Autowired
-    private UserDao_Exception dao;
-
-    private User user1;
-    private User user2;
-    private User user3;
+    User user1;
+    User user2;
+    User user3;
 
     @Before
     public void setUp() {
+        dao = new UserDao_Exception();
+
+        DataSource dataSource = new SingleConnectionDataSource("jdbc:mysql://192.168.99.100:3306/testdb", "spring", "book", true);
+        dao.setDataSource(dataSource);
+
         user1 = new User("gyumee", "박성철", "springno1");
         user2 = new User("leegw700", "이길원", "springno2");
         user3 = new User("bumjin", "박범진", "springno3");

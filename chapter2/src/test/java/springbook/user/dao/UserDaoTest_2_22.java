@@ -6,33 +6,35 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import springbook.user.domain.User;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * 2-19 UserDao를 직접 DI받도록 만든 테스트
- * 기존 DL 방식보다 훨씬 깔끔해짐
+ * 2-22 테스트용 설정 파일 적용
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/applicationContext-2-14.xml")
-public class UserDaoTest_2_19 {
+@ContextConfiguration(locations="/test-applicationContext-2-21.xml")
+public class UserDaoTest_2_22 {
 
     @Autowired
-    private ApplicationContext context;
+    ApplicationContext context;
 
     // UserDao 타입 빈을 직접 DI받는다.
     @Autowired
-    private UserDao_Exception dao;
+    UserDao_Exception dao;
 
-    private User user1;
-    private User user2;
-    private User user3;
+    User user1;
+    User user2;
+    User user3;
 
     @Before
     public void setUp() {
