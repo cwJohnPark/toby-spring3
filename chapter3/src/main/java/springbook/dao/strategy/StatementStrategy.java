@@ -1,4 +1,4 @@
-package dao.strategy;
+package springbook.dao.strategy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

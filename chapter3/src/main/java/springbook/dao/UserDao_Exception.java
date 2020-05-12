@@ -1,6 +1,6 @@
-package dao;
+package springbook.dao;
 
-import domain.User;
+import springbook.domain.User;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import javax.sql.DataSource;
@@ -10,58 +10,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * 분리와 재사용을 위한 디자인 패턴 적용
- * 3-4 개선할 deleteAll() 메소드
- * 3-5 add() 메소드에서 수정할 부분
- * 3-6 변하는 부분을 메소드로 추출한 후의 deleteAll()
+ * 3-1 JDBC API를 이용한 DAO
+ * 3-2 예외 발생 시에도 리소스를 반환하도록 수정한 deleteAll()
+ * 3-3 JDBC 예외처리를 적용한 getCount() 메소드
  */
-public class UserDao_MethodExtract {
+public class UserDao_Exception {
     private DataSource dataSource;
 
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
-    }
-
-    /**
-     * 3-6 변하는 부분을 메소드로 추출한 후의 deleteAll()
-     */
-    public void deleteAll() throws SQLException {
-        Connection c = null;
-        PreparedStatement ps = null;
-
-        try {
-            c = dataSource.getConnection();
-
-            // 변하는 부분을 메소드로 추출하고 변하지 않는 부분에서 호출하도록 만듦
-            ps = makeStatement(c);
-
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch( SQLException e) {
-                    // ps.close() 메소드에서도 SQLExecption이 발생할 수 잇으므로 이를 잡아야 한다.
-                    // 그렇지 않으면 Connection을 close() 하지 못하고 메소드를 빠져나갈 수 있다.
-                }
-            }
-            if (c != null) {
-                try {
-                    c.close(); // Connection 반환
-                } catch(SQLException e) {
-                }
-            }
-        }
-
-        ps.close();
-        c.close();
-    }
-
-    private PreparedStatement makeStatement(Connection c) throws SQLException {
-        PreparedStatement ps = c.prepareStatement("delete * from users");
-        return ps;
     }
 
     public void add(User user) throws SQLException {
@@ -102,6 +59,40 @@ public class UserDao_MethodExtract {
         return user;
     }
 
+    /**
+     * 3-2 예외 발생 시에도 리소스를 반환하도록 수정한 deleteAll()
+     */
+    public void deleteAll() throws SQLException {
+        Connection c = null;
+        PreparedStatement ps = null;
+
+        try {
+            // 예외가 발생할 가능성이 있는 코드를 모두 try 블록으로 묶어준다.
+            c = dataSource.getConnection();
+            ps = c.prepareStatement(" delete from users");
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch( SQLException e) {
+                    // ps.close() 메소드에서도 SQLExecption이 발생할 수 잇으므로 이를 잡아야 한다.
+                    // 그렇지 않으면 Connection을 close() 하지 못하고 메소드를 빠져나갈 수 있다.
+                }
+            }
+            if (c != null) {
+                try {
+                    c.close(); // Connection 반환
+                } catch(SQLException e) {
+                }
+            }
+        }
+
+        ps.close();
+        c.close();
+    }
 
     /**
      * 3-3 JDBC 예외처리를 적용한 getCount() 메소드

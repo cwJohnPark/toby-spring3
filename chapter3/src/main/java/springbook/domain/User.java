@@ -1,4 +1,4 @@
-package domain;
+package springbook.domain;
 
 /**
  * 1.1.1 User 자바빈 규약을 따르는 오브젝트

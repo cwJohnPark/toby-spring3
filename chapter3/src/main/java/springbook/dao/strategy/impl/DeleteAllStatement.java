@@ -1,6 +1,6 @@
-package dao.strategy.impl;
+package springbook.dao.strategy.impl;
 
-import dao.strategy.StatementStrategy;
+import springbook.dao.strategy.StatementStrategy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

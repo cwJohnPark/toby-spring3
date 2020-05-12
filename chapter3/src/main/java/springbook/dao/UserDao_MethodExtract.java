@@ -1,6 +1,6 @@
-package dao.templatemethod;
+package springbook.dao;
 
-import domain.User;
+import springbook.domain.User;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import javax.sql.DataSource;
@@ -10,15 +10,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- *
+ * 분리와 재사용을 위한 디자인 패턴 적용
+ * 3-4 개선할 deleteAll() 메소드
+ * 3-5 add() 메소드에서 수정할 부분
+ * 3-6 변하는 부분을 메소드로 추출한 후의 deleteAll()
  */
-public abstract class UserDao_TemplateMethod {
+public class UserDao_MethodExtract {
     private DataSource dataSource;
 
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
+    /**
+     * 3-6 변하는 부분을 메소드로 추출한 후의 deleteAll()
+     */
     public void deleteAll() throws SQLException {
         Connection c = null;
         PreparedStatement ps = null;
@@ -53,14 +59,14 @@ public abstract class UserDao_TemplateMethod {
         c.close();
     }
 
-    abstract protected PreparedStatement makeStatement(Connection c) throws SQLException;
+    private PreparedStatement makeStatement(Connection c) throws SQLException {
+        PreparedStatement ps = c.prepareStatement("delete * from users");
+        return ps;
+    }
 
     public void add(User user) throws SQLException {
         Connection c = dataSource.getConnection();
-
-        // 템플릿 메소드 적용
-        PreparedStatement ps = makeStatement(c, user);
-
+        PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) value (?, ?, ?)");
         ps.setString(1, user.getId());
         ps.setString(2, user.getName());
         ps.setString(3, user.getPassword());
@@ -70,8 +76,6 @@ public abstract class UserDao_TemplateMethod {
         ps.close();
         c.close();
     }
-
-    protected abstract PreparedStatement makeStatement(Connection c, User user) throws SQLException;
 
     public User get(String id) throws SQLException {
         Connection c = dataSource.getConnection();

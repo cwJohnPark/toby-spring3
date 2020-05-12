@@ -31,7 +31,7 @@ public class UserDaoTest_2_5 {
         user.setName("백기선");
         user.setPassword("married");
 
-        //dao.add(user);
+        //springbook.dao.add(user);
 
         User user2 = dao.get("user2-4");
 

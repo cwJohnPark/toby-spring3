@@ -1,8 +1,7 @@
-package dao.strategy;
+package springbook.dao.strategy;
 
-import dao.strategy.StatementStrategy;
-import domain.User;
 import org.springframework.dao.EmptyResultDataAccessException;
+import springbook.domain.User;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -11,55 +10,42 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * 전략 클래스에 익명 내부 클래스 활용
+ * 3-25 수동 DI
  */
-public class UserDao_AnonymousInnerClass {
-    private DataSource dataSource;
+public class UserDao_ManualDI {
 
+    private DataSource dataSource;
+    private JdbcContext jdbcContext;
+    /**
+     * 3-25 JdbcContext 생성과 DI 작업을 수행하는 setDataSource() 메소드
+     */
     public void setDataSource(DataSource dataSource) {
+        // JdbcContext 생성(IoC)
+        this.dataSource = dataSource;
+        // 의존 오브젝트 주입 (DI)
+        this.jdbcContext.setDataSource(dataSource);
+        // 아직 JdbcContext를 적용하지 않은 메소드를 위해 저장해둔다.
         this.dataSource = dataSource;
     }
 
-    /**
-     * 3-19 메소드 파라미터로 이전한 익명 내부 클래스
-     */
+    // DI 받은 JdbcContext의 컨텍스트 메소드를 사용하도록 변경한다.
     public void add(final User user) throws SQLException {
-        jdbcContextWithStatementStrategy(new StatementStrategy() {
-            @Override
-            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-                PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?, ?, ?)");
-                ps.setString(1, user.getId());
-                ps.setString(2, user.getName());
-                ps.setString(3, user.getPassword());
+        this.jdbcContext.workWithStatementStrategy(
+                new StatementStrategy() {
+                    @Override
+                    public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+                        PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?, ?, ?)");
+                        ps.setString(1, user.getId());
+                        ps.setString(2, user.getName());
+                        ps.setString(3, user.getPassword());
 
-                return ps;
-            }
-        });
+                        return ps;
+                    }
+                }
+        );
     }
-
-    /**
-     * 3-18 AddStatement를 익명 내부 클래스로 전환
-     */
-    public void add_verbose(final User user) throws SQLException {
-        StatementStrategy st = new StatementStrategy() {
-            @Override
-            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-                PreparedStatement ps = c.prepareStatement("insert into users(id, name, password) values(?, ?, ?)");
-                ps.setString(1, user.getId());
-                ps.setString(2, user.getName());
-                ps.setString(3, user.getPassword());
-
-                return ps;
-            }
-        };
-        jdbcContextWithStatementStrategy(st);
-    }
-
-    /**
-     * 3-20 익명 내부 클래스를 적용한 deleteAll() 메소드
-     */
     public void deleteAll() throws SQLException {
-        jdbcContextWithStatementStrategy(new StatementStrategy() {
+        this.jdbcContext.workWithStatementStrategy(new StatementStrategy() {
             @Override
             public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
                 return c.prepareStatement("delete from users");
@@ -67,25 +53,8 @@ public class UserDao_AnonymousInnerClass {
         });
     }
 
+
     /* ------------------------------------------ */
-
-    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
-        Connection c = null;
-        PreparedStatement ps = null;
-
-        try {
-            c = dataSource.getConnection();
-
-            ps = stmt.makePreparedStatement(c);
-
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (ps != null) { try { ps.close(); } catch (SQLException e) {} }
-            if (c != null) { try { c.close(); } catch (SQLException e) {} }
-        }
-    }
 
     public User get(String id) throws SQLException {
         Connection c = dataSource.getConnection();

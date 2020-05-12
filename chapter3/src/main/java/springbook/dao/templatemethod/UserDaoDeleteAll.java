@@ -1,6 +1,6 @@
-package dao.templatemethod;
+package springbook.dao.templatemethod;
 
-import domain.User;
+import springbook.domain.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

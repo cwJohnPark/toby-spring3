@@ -1,6 +1,6 @@
-package dao.strategy;
+package springbook.dao.strategy;
 
-import domain.User;
+import springbook.domain.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;

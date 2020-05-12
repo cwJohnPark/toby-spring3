@@ -26,7 +26,7 @@ public class UserDaoTest_2_16 {
     public void setUp() {
         ApplicationContext context = new GenericXmlApplicationContext("applicationContext-2-14.xml");
 
-        // dao 픽스쳐
+        // springbook.dao 픽스쳐
         dao = context.getBean("userDao", UserDao_Exception.class);
 
         // User 객체 픽스쳐

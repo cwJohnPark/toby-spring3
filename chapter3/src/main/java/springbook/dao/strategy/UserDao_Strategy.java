@@ -1,8 +1,8 @@
-package dao.strategy;
+package springbook.dao.strategy;
 
-import dao.strategy.impl.AddStatement;
-import dao.strategy.impl.DeleteAllStatement;
-import domain.User;
+import springbook.dao.strategy.impl.AddStatement;
+import springbook.dao.strategy.impl.DeleteAllStatement;
+import springbook.domain.User;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import javax.sql.DataSource;
