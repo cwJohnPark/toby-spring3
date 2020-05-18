@@ -15,6 +15,9 @@ public class JdbcContext {
         this.dataSource = dataSource;
     }
 
+    /**
+     * Template과 Callback 코드가 서로 응집력이 강하므로 한군데 모여있다.
+     */
     public void executeSql(final String query) throws SQLException {
         workWithStatementStrategy(
                 // Callback

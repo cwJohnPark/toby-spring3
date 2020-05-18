@@ -1,8 +1,6 @@
 package springbook.dao.templatecallback;
 
 import org.springframework.dao.EmptyResultDataAccessException;
-import springbook.dao.templatecallback.JdbcContext;
-import springbook.dao.templatecallback.StatementStrategy;
 import springbook.domain.User;
 
 import javax.sql.DataSource;
@@ -48,7 +46,6 @@ public class UserDao_TemplateCallback {
 
     public void deleteAll_private() throws SQLException {
         executeSql("delete from users");
-
     }
 
     /* ------------------------------------------ */
