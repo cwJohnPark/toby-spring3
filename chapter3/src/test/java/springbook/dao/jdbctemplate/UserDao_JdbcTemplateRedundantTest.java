@@ -11,19 +11,30 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
-public class UserDao_JdbcTemplateTest {
-    UserDao_JdbcTemplate dao;
+public class UserDao_JdbcTemplateRedundantTest {
+    UserDao_JdbcTemplate_Redundant dao;
     User user1;
     User user2;
     User user3;
 
     @Before
     public void setUp() throws Exception {
-        dao = new UserDao_JdbcTemplate();
+        dao = new UserDao_JdbcTemplate_Redundant();
         dao.setDataSource(new SingleConnectionDataSource("jdbc:mysql://192.168.99.100:3306/testdb", "spring", "book", true));
         user1 = new User("gyumee", "박성철", "springno1");
         user2 = new User("leegw700", "이길원", "springno2");
         user3 = new User("bumjin", "박범진", "springno3");
+    }
+
+    /**
+     * 3-54 데이터가 없는 경우에 대한 검증 코드가 추가된 getAll() 테스트
+     */
+    @Test
+    public void getAllNegativeTest() throws Exception{
+        dao.deleteAll();
+
+        List<User> users0 = dao.getAll();
+        assertThat(users0.size(), is(0));
     }
 
     /**
