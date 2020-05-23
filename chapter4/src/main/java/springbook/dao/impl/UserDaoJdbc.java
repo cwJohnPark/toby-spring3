@@ -29,8 +29,8 @@ public class UserDaoJdbc implements UserDao {
         public User mapRow(ResultSet rs, int rowNum) throws SQLException {
             User user = new User();
             user.setId(rs.getString("id"));
-            user.setId(rs.getString("name"));
-            user.setId(rs.getString("password"));
+            user.setName(rs.getString("name"));
+            user.setPassword(rs.getString("password"));
             return user;
         }
     };
