@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  * 5-5 수정된 테스트 픽스처
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/applicationContext.xml")
+@ContextConfiguration(locations = "/applicationContext-5-5.xml")
 public class UserDaoTest {
 
     @Autowired UserDao dao;
@@ -34,6 +34,44 @@ public class UserDaoTest {
         dao.add(user1);
         dao.add(user2);
         dao.add(user3);
+    }
+
+    @Test
+    public void update_revision() {
+        dao.deleteAll();
+
+        dao.add(user1); // 수정할 사용자
+        dao.add(user2); // 수정하지 않을 사용자
+
+        user1.setName("오민규");
+        user1.setPassword("springno6");
+        user1.setLevel(Level.GOLD);
+        user1.setLogin(1000);
+        user1.setRecommend(999);
+
+        dao.update(user1);
+
+        User user1update = dao.get(user1.getId());
+        checkSameUser(user1, user1update);
+        User user2same = dao.get(user2.getId());
+        checkSameUser(user2, user2same);
+    }
+
+    /**
+     * 5-10 사용자 정보 수정 메소드 테스트
+     */
+    @Test
+    public void update() throws Exception {
+        dao.deleteAll();
+
+        dao.add(user1);
+
+        user1.setName("오민규");
+        user1.setPassword("springno6");
+        user1.setLevel(Level.GOLD);
+        user1.setLogin(1000);
+        user1.setRecommend(999);
+        dao.update(user1);
     }
 
     @Test
