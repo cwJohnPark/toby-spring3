@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import springbook.domain.Level;
+import springbook.domain.Level;
 import springbook.domain.User;
+import springbook.service.UserService;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
@@ -20,7 +22,6 @@ import static org.junit.Assert.*;
 public class UserDaoTest {
 
     @Autowired UserDao dao;
-
     User user1, user2, user3;
 
     @Before

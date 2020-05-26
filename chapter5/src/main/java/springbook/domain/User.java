@@ -1,8 +1,5 @@
 package springbook.domain;
 
-/**
- * 5-4 User에 추가된 필드
- */
 public class User {
     String id;
     String name;
@@ -19,6 +16,18 @@ public class User {
         this.level = level;
         this.login = login;
         this.recommend = recommend;
+    }
+
+    /**
+     * 5-27 User 레벨 업그레이드 작업용 메소드
+     */
+    public void upgradeLevel() {
+        Level nextLevel = this.level.nextLevel();
+        if (nextLevel == null) {
+            throw new IllegalStateException(this.level + "은 업그레이드가 불가능합니다.");
+        } else {
+            this.level = nextLevel;
+        }
     }
 
     public Level getLevel() {

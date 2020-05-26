@@ -1,17 +1,19 @@
 package springbook.dao;
 
-import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import springbook.dao.impl.UserDaoJdbc;
 import springbook.domain.Level;
 import springbook.domain.User;
 import springbook.service.UserService;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,13 +24,9 @@ import static org.junit.Assert.assertThat;
 /**
  * 5-16 UserServiceTest 클래스
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/applicationContext-5-15.xml")
 public class UserServiceTest {
-    @Autowired
-    UserDao userDao;
 
-    @Autowired
+    UserDaoJdbc userDao;
     UserService userService;
 
     // 테스트 픽스쳐
@@ -39,6 +37,12 @@ public class UserServiceTest {
      */
     @Before
     public void setUp() {
+        userDao = new UserDaoJdbc();
+        DataSource dataSource = new SingleConnectionDataSource("jdbc:mysql://192.168.99.100:3306/testdb", "spring", "book", true);
+        userDao.setDataSource(dataSource);
+        userService = new UserService();
+        userService.setUserDao(userDao);
+
         users = Arrays.asList(
                 new User("bumjin", "박범진", "p1", Level.BASIC, 49, 0)
                 ,new User("joytouch", "강명성", "p2", Level.BASIC, 50, 0)
@@ -48,12 +52,38 @@ public class UserServiceTest {
         );
     }
 
+    /**
+     * 5-21 add() 메소드의 테스트
+     */
+    @Test
+    public void add(){
+        userDao.deleteAll();
+
+        // GOLD 레벨이 이미 지정된 User임
+        // 레벨을 초기화하지 않아야 한다.
+        User userWithLevel = users.get(4); // GOLD 레벨
+        // 레벨이 비어 있는 User
+        // 로직에 따라 등록 중에 BASIC 레벨도 설정돼야 한다.
+        User userWithoutLevel = users.get(0);
+        userWithoutLevel.setLevel(null);
+
+        userService.add(userWithLevel);
+        userService.add(userWithoutLevel);
+
+        User userWithLevelRead = userDao.get(userWithLevel.getId());
+        User userWithoutLevelRead = userDao.get(userWithoutLevel.getId());
+
+        assertThat(userWithLevelRead.getLevel(), is(userWithLevel.getLevel()));
+        assertThat(userWithoutLevelRead.getLevel(), is(userWithoutLevel.getLevel()));
+
+    }
+
     @Test
     public void upgradeLevelsTest() throws Exception {
         userDao.deleteAll();
         for(User user : users) userDao.add(user);
 
-        userService.upgradeLevels();
+        userService.upgradeLevels_lowCohesion();
 
         checkLevel(users.get(0), Level.BASIC);
         checkLevel(users.get(1), Level.SILVER);
