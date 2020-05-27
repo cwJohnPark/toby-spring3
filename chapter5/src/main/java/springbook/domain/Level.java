@@ -21,7 +21,7 @@ public enum Level {
     }
 
     public Level nextLevel() {
-        return Level.valueOf(next);
+        return this.value == next ? null : Level.valueOf(next);
     }
 
     public static Level valueOf(int value) {

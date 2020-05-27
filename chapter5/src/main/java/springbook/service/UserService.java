@@ -3,14 +3,40 @@ package springbook.service;
 import springbook.dao.UserDao;
 import springbook.domain.Level;
 import springbook.domain.User;
+import springbook.domain.UserLevelUpgradePolicy;
 
 import java.util.List;
 
 public class UserService {
+    public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
+    public static final int MIN_RECOMMEND_FOR_GOLD = 30;
+
     UserDao userDao;
+    UserLevelUpgradePolicy policy;
 
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
+    }
+
+    public void setPolicy(UserLevelUpgradePolicy policy) {
+        this.policy = policy;
+    }
+
+    /**
+     * 5-33 업그레이드 정책 분리
+     */
+    private void upgradeLevel_separatePolicy(User user) {
+        policy.upgradeLevel(user);
+        userDao.update(user);
+    }
+
+    public void upgradeLevels_separatePolicy() {
+        List<User> users = userDao.getAll();
+        for(User user : users) {
+            if(canUpgradeLevel(user)) {
+                upgradeLevel_separatePolicy(user);
+            }
+        }
     }
 
     /**
@@ -49,8 +75,8 @@ public class UserService {
         Level currentLevel = user.getLevel();
         switch(currentLevel) {
             // 레벨 별로 구분하여 조건을 판단한다.
-            case BASIC : return (user.getLogin() >= 50);
-            case SILVER : return (user.getRecommend() >= 30);
+            case BASIC : return (user.getLogin() >= MIN_LOGCOUNT_FOR_SILVER);
+            case SILVER : return (user.getRecommend() >= MIN_RECOMMEND_FOR_GOLD);
             case GOLD : return false;
             // 현재 로직에서 다룰 수 없는 레벨이 주어지면 예외를 발생시킨다.
             // 새로운 레벨이 추가되고 로직을 수정하지 않으면 에러가 나서 확인할 수 있다.

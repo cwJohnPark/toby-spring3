@@ -11,6 +11,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import springbook.dao.impl.UserDaoJdbc;
 import springbook.domain.Level;
 import springbook.domain.User;
+import springbook.domain.UserLevelUpgradePolicy;
+import springbook.domain.UserLevelUpgradePolicyImpl;
 import springbook.service.UserService;
 
 import javax.sql.DataSource;
@@ -20,6 +22,8 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static springbook.service.UserService.MIN_LOGCOUNT_FOR_SILVER;
+import static springbook.service.UserService.MIN_RECOMMEND_FOR_GOLD;
 
 /**
  * 5-16 UserServiceTest 클래스
@@ -40,17 +44,70 @@ public class UserServiceTest {
         userDao = new UserDaoJdbc();
         DataSource dataSource = new SingleConnectionDataSource("jdbc:mysql://192.168.99.100:3306/testdb", "spring", "book", true);
         userDao.setDataSource(dataSource);
+        UserLevelUpgradePolicy policy = new UserLevelUpgradePolicyImpl();
+
         userService = new UserService();
         userService.setUserDao(userDao);
+        userService.setPolicy(policy);
 
         users = Arrays.asList(
-                new User("bumjin", "박범진", "p1", Level.BASIC, 49, 0)
-                ,new User("joytouch", "강명성", "p2", Level.BASIC, 50, 0)
-                ,new User("erwins", "신승한", "p3", Level.SILVER, 60, 29)
-                ,new User("madnite1", "이상호", "p4", Level.SILVER, 60, 30)
-                ,new User("green", "오민규", "p5", Level.GOLD, 100, 100)
+                new User("bumjin", "박범진", "p1", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER - 1, 0)
+                ,new User("joytouch", "강명성", "p2", Level.BASIC, MIN_LOGCOUNT_FOR_SILVER, 0)
+                ,new User("erwins", "신승한", "p3", Level.SILVER, MIN_LOGCOUNT_FOR_SILVER+1, MIN_RECOMMEND_FOR_GOLD-1)
+                ,new User("madnite1", "이상호", "p4", Level.SILVER, MIN_LOGCOUNT_FOR_SILVER+10, MIN_RECOMMEND_FOR_GOLD)
+                ,new User("green", "오민규", "p5", Level.GOLD, Integer.MAX_VALUE, Integer.MAX_VALUE)
         );
     }
+
+
+
+
+
+    /**
+     * 5-33 업그레이드 정책 분리 후 유저 업그레이드 테스트
+     */
+    @Test
+    public void upgradeLevels_separtePolicy() throws Exception {
+        userDao.deleteAll();
+        for(User user : users) userDao.add(user);
+
+        userService.upgradeLevels_separatePolicy();
+
+        checkLevelUpgraded(users.get(0), false);
+        checkLevelUpgraded(users.get(1), true);
+        checkLevelUpgraded(users.get(2), false);
+        checkLevelUpgraded(users.get(3), true);
+        checkLevelUpgraded(users.get(4), false);
+    }
+
+    /**
+     * 5-30 개선한 upgradeLevels() 테스트
+     */
+    @Test
+    public void upgradeLevels_revision() throws Exception {
+        userDao.deleteAll();
+        for(User user : users) userDao.add(user);
+
+        userService.upgradeLevels();
+
+        checkLevelUpgraded(users.get(0), false);
+        checkLevelUpgraded(users.get(1), true);
+        checkLevelUpgraded(users.get(2), false);
+        checkLevelUpgraded(users.get(3), true);
+        checkLevelUpgraded(users.get(4), false);
+    }
+
+    private void checkLevelUpgraded(User user, boolean upgraded) {
+        User userUpdate = userDao.get(user.getId());
+        if (upgraded) {
+            // 업데이트가 발생했다.
+            assertThat(userUpdate.getLevel(), is(user.getLevel().nextLevel()));
+        } else {
+            // 업데이트가 발생하지 않았다.
+            assertThat(userUpdate.getLevel(), is(user.getLevel()));
+        }
+    }
+
 
     /**
      * 5-21 add() 메소드의 테스트
