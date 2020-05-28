@@ -22,6 +22,8 @@ public class UserService {
         this.policy = policy;
     }
 
+
+
     /**
      * 5-33 업그레이드 정책 분리
      */
@@ -42,7 +44,7 @@ public class UserService {
     /**
      * 5-28 간결해진 upgradeLevel()
      */
-    private void upgradeLevel(User user) {
+    protected void upgradeLevel(User user) {
         user.upgradeLevel();
         userDao.update(user);
     }

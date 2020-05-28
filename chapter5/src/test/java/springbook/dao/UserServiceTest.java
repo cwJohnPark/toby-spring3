@@ -60,6 +60,29 @@ public class UserServiceTest {
     }
 
 
+    /**
+     * 5-36 예외 발생 시 작업 취소 여부 테스트
+     */
+    @Test
+    public void upgradeAllOrNothing() throws Exception {
+        UserService testUserService = new TestUserService(users.get(3).getId());
+        testUserService.setUserDao(this.userDao);
+        userDao.deleteAll();
+
+        for(User user : users)
+            userDao.add(user);
+
+        try {
+            testUserService.upgradeLevels();
+        } catch (TestUserService.TestUserServiceException e) {
+            // 성공
+        }
+
+        // 테스트는 실패한다.
+        // 두 번째 사용자 레벨은 SILVER로 바뀌고나서 예외 발생 후 그대로 유지가 되었기 때문
+        checkLevelUpgraded(users.get(1), false);
+
+    }
 
 
 

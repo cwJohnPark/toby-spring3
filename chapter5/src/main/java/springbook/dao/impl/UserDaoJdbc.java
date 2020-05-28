@@ -25,7 +25,6 @@ public class UserDaoJdbc implements UserDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-
     /**
      * 5-12 사용자 정보 수정용 update() 메소드
      */

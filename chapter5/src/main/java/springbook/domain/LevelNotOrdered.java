@@ -3,14 +3,14 @@ package springbook.domain;
 /**
  * 5-3 사용자 레벨용 이늄
  */
-public enum Level_NotOrdered {
+public enum LevelNotOrdered {
     // 세 개의 이늄 오브젝트 정의
     BASIC(1), SILVER(2), GOLD(3);
 
     private final int value;
 
     // DB에 저장할 값을 넣어줄 생성자를 만들어준다.
-    Level_NotOrdered(int value) {
+    LevelNotOrdered(int value) {
         this.value = value;
     }
 
@@ -20,7 +20,7 @@ public enum Level_NotOrdered {
     }
 
     // 값으로부터 Level 타입 오브젝트를 가져오도록 만든 스태틱 메소드
-    public static Level_NotOrdered valueOf(int value) {
+    public static LevelNotOrdered valueOf(int value) {
         switch (value) {
             case 1 : return BASIC;
             case 2 : return SILVER;

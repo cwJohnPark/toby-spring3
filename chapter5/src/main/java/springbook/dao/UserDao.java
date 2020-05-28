@@ -1,7 +1,6 @@
 package springbook.dao;
 
 import springbook.domain.User;
-import springbook.domain.User_ConstantLevel;
 
 import java.util.List;
 
